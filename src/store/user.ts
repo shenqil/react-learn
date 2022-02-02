@@ -1,11 +1,11 @@
 // src\store\user.ts
 
-import { createStore, Reducer, applyMiddleware } from 'redux';
+// import { createStore, Reducer, applyMiddleware } from 'redux';
 import reduxThunk from 'redux-thunk';
 import reduxLogger from 'redux-logger';
 
-// import { Reducer } from 'redux';
-// import { createStore } from '../redux/index';
+import { Reducer } from 'redux';
+import { createStore, applyMiddleware } from '../redux/index';
 
 interface IUserStore {
   name:string

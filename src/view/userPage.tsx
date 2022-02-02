@@ -4,7 +4,7 @@ import React, { FC, useEffect, useState } from 'react';
 import store from '../store/user';
 
 const UserPage:FC = () => {
-  const [,forceUpdateDispatch] = useState(0);
+  const [, forceUpdateDispatch] = useState(0);
 
   function random() {
     store.dispatch({
@@ -14,9 +14,13 @@ const UserPage:FC = () => {
   }
 
   useEffect(() => {
-    store.subscribe(() => {
+    const unsubscribe = store.subscribe(() => {
       forceUpdateDispatch(Math.random());
     });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return (

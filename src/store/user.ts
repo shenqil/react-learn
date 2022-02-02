@@ -1,6 +1,7 @@
 // src\store\user.ts
 
-import { createStore, Reducer } from 'redux';
+import { Reducer } from 'redux';
+import { createStore } from '../redux/index';
 
 interface IUserStore {
   name:string

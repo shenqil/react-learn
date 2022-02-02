@@ -13,6 +13,17 @@ const UserPage:FC = () => {
     });
   }
 
+  function asyncRandom() {
+    store.dispatch((((dispatch:any) => {
+      setTimeout(() => {
+        dispatch({
+          type: 'change',
+          payload: Math.random().toString(16).substring(2),
+        });
+      }, 1000);
+    }) as any));
+  }
+
   useEffect(() => {
     const unsubscribe = store.subscribe(() => {
       forceUpdateDispatch(Math.random());
@@ -27,6 +38,7 @@ const UserPage:FC = () => {
     <div>
       <p>{store.getState().name}</p>
       <button onClick={() => random()} type="button">改变名称</button>
+      <button onClick={() => asyncRandom()} type="button">异步改变名称</button>
     </div>
   );
 };

@@ -1,7 +1,11 @@
 // src\store\user.ts
 
-import { Reducer } from 'redux';
-import { createStore } from '../redux/index';
+import { createStore, Reducer, applyMiddleware } from 'redux';
+import reduxThunk from 'redux-thunk';
+import reduxLogger from 'redux-logger';
+
+// import { Reducer } from 'redux';
+// import { createStore } from '../redux/index';
 
 interface IUserStore {
   name:string
@@ -20,4 +24,4 @@ const userReducer:Reducer<IUserStore> = (store = { name: 'xiaoming' }, action) =
   }
 };
 
-export default createStore(userReducer);
+export default createStore(userReducer, applyMiddleware(reduxThunk, reduxLogger));

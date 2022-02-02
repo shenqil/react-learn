@@ -2,10 +2,11 @@
 
 // import { createStore, Reducer, applyMiddleware } from 'redux';
 import reduxThunk from 'redux-thunk';
-import reduxLogger from 'redux-logger';
+// import reduxLogger from 'redux-logger';
 
 import { Reducer } from 'redux';
 import { createStore, applyMiddleware } from '../redux/index';
+import reduxLogger from '../redux/redux-logger';
 
 interface IUserStore {
   name:string

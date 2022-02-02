@@ -1,10 +1,10 @@
 // src\store\index.ts
 
-import { createStore, applyMiddleware, combineReducers } from 'redux';
+// import { createStore, applyMiddleware, combineReducers } from 'redux';
 // import reduxThunk from 'redux-thunk';
 // import reduxLogger from 'redux-logger';
 
-// import { createStore, applyMiddleware } from '../redux/index';
+import { createStore, applyMiddleware, combineReducers } from '../redux/index';
 import reduxLogger from '../redux/redux-logger';
 import reduxThunk from '../redux/redux-thunk';
 

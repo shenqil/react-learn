@@ -1,7 +1,7 @@
 // src\view\userPage.tsx
 
 import React, { FC, useEffect, useState } from 'react';
-import store from '../store/user';
+import store from '../store';
 
 const UserPage:FC = () => {
   const [, forceUpdateDispatch] = useState(0);
@@ -24,6 +24,13 @@ const UserPage:FC = () => {
     }) as any));
   }
 
+  function add() {
+    store.dispatch({
+      type: 'add',
+      payload: 1,
+    });
+  }
+
   useEffect(() => {
     const unsubscribe = store.subscribe(() => {
       forceUpdateDispatch(Math.random());
@@ -36,9 +43,11 @@ const UserPage:FC = () => {
 
   return (
     <div>
-      <p>{store.getState().name}</p>
+      <p>{store.getState().userReducer.name}</p>
       <button onClick={() => random()} type="button">改变名称</button>
       <button onClick={() => asyncRandom()} type="button">异步改变名称</button>
+      <p>{store.getState().countReducer}</p>
+      <button onClick={() => add()} type="button">add</button>
     </div>
   );
 };

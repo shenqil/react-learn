@@ -51,4 +51,26 @@ export const connect = (mapStateToProps:any, mapDispatchToProps:any) => (Wrapped
   return <WrappedComponent {...props} {...stateProps} {...dispatchProps} />;
 };
 
+// hooks
+export function useSelector(selector:any) {
+  const forceUpdate = useForceUpdate();
+  const store = useContext(Context) as any;
+  const selectorState = selector(store.getState());
+
+  useLayoutEffect(() => {
+    const unsubscribe = store.subscribe(() => {
+      forceUpdate();
+    });
+    return () => unsubscribe();
+  }, [forceUpdate, store]);
+
+  return selectorState;
+}
+
+export function useDispatch() {
+  const store = useContext(Context) as any;
+
+  return store.dispatch;
+}
+
 export default {};

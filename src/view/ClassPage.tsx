@@ -1,7 +1,8 @@
 // src\view\ClassPage.tsx
 
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+// import { connect } from 'react-redux';
+import { connect } from '../react-redux';
 
 // eslint-disable-next-line react/prefer-stateless-function
 class ClassPage extends Component {
@@ -21,13 +22,17 @@ class ClassPage extends Component {
 
 export default connect(
   (count:number) => ({ count }),
-  (dispatch) => {
-    const add = () => dispatch({ type: 'ADD' });
-    const minus = () => dispatch({ type: 'MINUS' });
-    return {
-      add,
-      minus,
-      dispatch,
-    };
+  // (dispatch:any) => {
+  //   const add = () => dispatch({ type: 'ADD' });
+  //   const minus = () => dispatch({ type: 'MINUS' });
+  //   return {
+  //     add,
+  //     minus,
+  //     dispatch,
+  //   };
+  // },
+  {
+    add: () => ({ type: 'ADD' }),
+    minus: () => ({ type: 'MINUS' }),
   },
 )(ClassPage);

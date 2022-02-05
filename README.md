@@ -1,38 +1,64 @@
-# webpack react 工程使用eslint 配置 airbnb 规则
-
-## 1.首先从创建一个 react 工程 [地址](https://github.com/shenqil/webpack5-reactExp)
-
-## 2.先安装airbnb基础规则 运行 `npx install-peerdeps --dev eslint-config-airbnb`
-+ 等同于运行 `npm install eslint-config-airbnb@18.2.1 eslint@^7.2.0 eslint-plugin-import@^2.22.1 eslint-plugin-jsx-a11y@^6.4.1 eslint-plugin-react@^7.21.5 eslint-plugin-react-hooks@^1.7.0 --save-dev`
-
-## 3.安装airbnb-typescript规则 
-+ 运行   `npm install eslint-config-airbnb-typescript  @typescript-eslint/eslint-plugin@^4.29.3  @typescript-eslint/parser@^4.29.3  --save-dev`
-
-## 4.配置 `.eslintrc.json`
+# 1. react-router 使用
+## 1.1 安装 `npm i react-router-dom`
+## 1.2 基本使用
 ```
-{
-  "root": true,
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaVersion": 12,
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true
-    },
-    "project": "./tsconfig.eslint.json"
-  },
-  "env": {
-    "browser": true,
-    "node": true
-  },
-  "plugins": ["@typescript-eslint"],
-  "extends": [
-    "airbnb",
-    "airbnb-typescript",
-    "airbnb/hooks"
-  ],
-  "ignorePatterns": ["node_modules/", "build/", "dist/", "e2e/"]
+// src\main.tsx
+import React from 'react';
+import { render } from 'react-dom';
+import {
+  BrowserRouter, Routes, Route, Link,
+} from 'react-router-dom';
+import HomePage from './view/Home';
+import Login from './view/Login';
+import Product from './view/Product';
+import Details from './view/Details';
+import Error from './view/Error';
+
+function App() {
+  return (
+    <div>
+      <BrowserRouter>
+        <div>
+          <Link to="/"> home </Link>
+          |
+          <Link to="/login"> login </Link>
+          |
+          <Link to="/product"> product </Link>
+          |
+          <Link to="/product/123"> details </Link>
+          |
+        </div>
+
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/product" element={<Product />}>
+            <Route path="/product/:id" element={<Details />} />
+          </Route>
+          <Route path="*" element={<Error />} />
+        </Routes>
+
+      </BrowserRouter>
+    </div>
+  );
 }
 
+render(<App />, document.getElementById('root'));
 ```
-[源码](https://github.com/shenqil/webpack5-reactExp/tree/eslint-airbnb)
+## 1.3 history 模式webpack 需要开启 `historyApiFallback: true`
+## 1.4 嵌套路由 使用 `Outlet`
+```
+// src\view\Product.tsx
+
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+
+export default function Product() {
+  return (
+    <div>
+      product
+      <Outlet />
+    </div>
+  );
+}
+```

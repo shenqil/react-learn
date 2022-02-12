@@ -1,9 +1,12 @@
 // src\main.tsx
 import React from 'react';
 import { render } from 'react-dom';
+// import {
+//   BrowserRouter, Routes, Route, Link,
+// } from 'react-router-dom';
 import {
   BrowserRouter, Routes, Route, Link,
-} from 'react-router-dom';
+} from './react-router';
 import HomePage from './view/Home';
 import Login from './view/Login';
 import Product from './view/Product';
@@ -31,7 +34,7 @@ function App() {
           <Route path="/product" element={<Product />}>
             <Route path="/product/:id" element={<Details />} />
           </Route>
-          <Route path="*" element={<Error />} />
+          <Route path="/error" element={<Error />} />
         </Routes>
 
       </BrowserRouter>

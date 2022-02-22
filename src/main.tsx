@@ -1,33 +1,42 @@
-import React, { useState } from 'react';
-import { render } from 'react-dom';
-import { add } from './assets/js/test';
-import './assets/font/iconfont.css';
-import './assets/css/index.scss';
+/* eslint-disable react/destructuring-assignment */
+// import React, { Component } from 'react';
+// import { render } from 'react-dom';
+import React from 'react';
+import { render } from './react/react-dom';
+import { Component } from './react/Component';
+import './index.scss';
 
-import img1 from './assets/img/1.jpg';
-import img2 from './assets/img/2.jpg';
+interface IProps{
+  name:string
+}
 
-function App() {
-  const [state, setState] = useState('CLICK ME');
-
+function FuncationComponent(props:IProps) {
   return (
-    <div>
-      <div className="box">
-        <div className="content">
-          德玛西亚，永不退缩
-          <i className="iconfont icon-xiazai" />
-          <img alt="" src={img1} />
-          <img alt="" src={img2} />
-        </div>
-      </div>
-      <button type="button" onClick={() => setState('CLICKED')}>{state}</button>
+    <div className="border">
+      <p>{props.name}</p>
     </div>
   );
 }
 
-render(<App />, document.getElementById('root'));
+// eslint-disable-next-line react/prefer-stateless-function
+class ClassComponent extends Component<IProps> {
+  render(): React.ReactNode {
+    return (
+      <div className="border">
+        <p>{this.props.name}</p>
+      </div>
+    );
+  }
+}
 
-add(1, 2)
-  .then((res) => {
-    console.log(res, 'add');
-  });
+const jsx = (
+  <div className="border">
+    <h1>jsx title</h1>
+    <a href="https://www.baidu.com/">链接</a>
+    一段普通文本
+    <FuncationComponent name="FuncationComponent" />
+    <ClassComponent name="ClassComponent" />
+  </div>
+);
+
+render(jsx, document.getElementById('root'));

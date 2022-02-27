@@ -85,6 +85,7 @@ function getParentNode(fiber:any):HTMLElement {
   let nuxt = fiber;
 
   while (nuxt) {
+    // 函数组件也是一个fiber,但是不存在stateNode
     if (nuxt.return?.stateNode) {
       return nuxt.return?.stateNode;
     }

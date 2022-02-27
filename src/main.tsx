@@ -31,9 +31,8 @@ class ClassComponent extends Component<IProps> {
 
 const jsx = (
   <div className="border">
-    <h1>jsx title</h1>
+    <h1>react 深入源码1</h1>
     <a href="https://www.baidu.com/">链接</a>
-    一段普通文本
     <FuncationComponent name="FuncationComponent" />
     <ClassComponent name="ClassComponent" />
   </div>

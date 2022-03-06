@@ -5,6 +5,7 @@ import {
   updateFunctionComponent,
   updateFragementComponent,
 } from './ReactFiberReconciler';
+import { schedulerCallback } from './scheduler';
 import { isString, isFunction } from './utils';
 
 let wipRoot:any = null;
@@ -14,20 +15,44 @@ export function scheduleUpdateOnFiber(fiber:any) {
   wipRoot = fiber;
   wipRoot.sibling = null;
   nextUnitOfwork = wipRoot;
+  schedulerCallback(workLoop);
 }
 
-function workLoop(IdleDeadline:IdleDeadline) {
-  while (nextUnitOfwork && IdleDeadline.timeRemaining() >= 0) {
-    // 第一个阶段 Reconciliaton Phase
+// ------- window.requestIdleCallback 可能存在浏览器兼容性问题 --------
+// function workLoop(IdleDeadline:IdleDeadline) {
+//   while (nextUnitOfwork && IdleDeadline.timeRemaining() >= 0) {
+//     // 第一个阶段 Reconciliaton Phase
+//     nextUnitOfwork = performUnitOfWork(nextUnitOfwork);
+//   }
+
+//   if (!nextUnitOfwork && wipRoot) {
+//     // 第二阶段 Commit Phase
+//     commitRoot();
+//   }
+// }
+// window.requestIdleCallback(workLoop);
+
+// 使用自己实现的调度，返回值：true 执行完成, false 还没有执行完成
+function workLoop() {
+  if (nextUnitOfwork) {
     nextUnitOfwork = performUnitOfWork(nextUnitOfwork);
+
+    // // 模拟大量计算
+    // let j = 0;
+    // for (let i = 0; i < 500000; i++) {
+    //   j += i;
+    // }
+    // console.log(j);
+  } else {
+    if (wipRoot) {
+      commitRoot();
+    }
+
+    return true;
   }
 
-  if (!nextUnitOfwork && wipRoot) {
-    // 第二阶段 Commit Phase
-    commitRoot();
-  }
+  return false;
 }
-window.requestIdleCallback(workLoop);
 
 function performUnitOfWork(wip:any):any {
   const { type } = wip;

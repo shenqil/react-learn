@@ -1,9 +1,9 @@
 /* eslint-disable react/destructuring-assignment */
-// import React, { Component } from 'react';
+// import React, { Component, useState, useReducer } from 'react';
 // import { render } from 'react-dom';
 import React from 'react';
 import { render } from './react/react-dom';
-import { Component } from './react/Component';
+import { Component, useReducer, useState } from './react';
 import './index.scss';
 
 interface IProps{
@@ -11,9 +11,13 @@ interface IProps{
 }
 
 function FuncationComponent(props:IProps) {
+  const [count, setCount] = useState(0);
+  const [count2, setCount2] = useReducer((x) => x * 2, 1);
   return (
     <div className="border">
       <p>{props.name}</p>
+      <button onClick={() => setCount(count + 1)} type="button">{count}</button>
+      <button onClick={() => setCount2()} type="button">{count2}</button>
     </div>
   );
 }

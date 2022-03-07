@@ -1,12 +1,17 @@
+import { Placement } from './utils';
+
 export interface IFiber{
-  type: any,
-  key?: string | number,
-  props?: any,
+  type: any, // 类型
+  key?: string | number, // 标记当前层唯一值
+  props?: any, // 属性值
   index?: number,
-  child?: IFiber,
-  sibling?: IFiber | null,
-  return?: IFiber,
-  stateNode: HTMLElement | null
+  child?: IFiber, // 第一个孩子
+  sibling?: IFiber | null, // 下一个兄弟
+  return?: IFiber, // 父节点
+  stateNode: HTMLElement | null, // 真实Dom
+  flags?:Number, // 标记当前节点类型(插入，更新，删除)
+  alternate?:IFiber, // 老节点
+  memoizedState?:any
 }
 
 export function createFiber(vnode:any, returnFiber:IFiber):IFiber {
@@ -16,6 +21,7 @@ export function createFiber(vnode:any, returnFiber:IFiber):IFiber {
     props: vnode.props,
     return: returnFiber,
     stateNode: null,
+    flags: Placement,
   };
   return newFiber;
 }

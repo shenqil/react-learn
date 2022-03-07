@@ -19,5 +19,9 @@
     "airbnb-typescript",
     "airbnb/hooks"
   ],
-  "ignorePatterns": ["node_modules/", "build/", "dist/", "e2e/"]
+  "ignorePatterns": ["node_modules/", "build/", "dist/", "e2e/"],
+  "rules": {
+    "import/no-cycle":0,
+    "@typescript-eslint/no-use-before-define":0
+  }
 }

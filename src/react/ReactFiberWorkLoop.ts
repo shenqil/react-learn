@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable no-bitwise */
 import {
   updataHostComponent,
   updateClassComponent,
@@ -6,12 +6,16 @@ import {
   updateFragementComponent,
 } from './ReactFiberReconciler';
 import { schedulerCallback } from './scheduler';
-import { isString, isFunction } from './utils';
+import {
+  isString, isFunction, updateNode, Placement, Update,
+} from './utils';
 
 let wipRoot:any = null;
 let nextUnitOfwork:any = null;
 // eslint-disable-next-line import/prefer-default-export
 export function scheduleUpdateOnFiber(fiber:any) {
+  // eslint-disable-next-line no-param-reassign
+  fiber.alternate = { ...fiber };
   wipRoot = fiber;
   wipRoot.sibling = null;
   nextUnitOfwork = wipRoot;
@@ -94,11 +98,17 @@ function commitWorker(wip:any) {
   }
 
   // 将子节点挂载在父节点上
-  const { stateNode } = wip;
+  const { stateNode, flags } = wip;
   const parentNode = getParentNode(wip);
 
-  if (stateNode) {
+  // 新增
+  if (stateNode && flags & Placement) {
     parentNode.appendChild(stateNode);
+  }
+
+  // 更新
+  if (stateNode && flags & Update) {
+    updateNode(stateNode, wip.alternate.props, wip.props);
   }
 
   // 递归

@@ -1,14 +1,19 @@
 # 写在前面
+
 + hook 是函数组件有了状态，原理是闭包
 + hook 是存储在`fiber`的`memoizedState`属性上；采用`{memoizedState: null, next: null}`的链表结构,所以 hook 只能在函数组件最外层和自定义hook中使用，且不能使用for和if逻辑判断，因为需要保证链表的唯一顺序
 + `fiber.memoizedState` 指向 hook 链表的第一个
+
 ***
 
 # 1.React 实现更新
+
 + 上一篇 [React Fiber](https://github.com/shenqil/react-learn/tree/%E6%BA%90%E7%A0%812-scheduler) 的代码里面还只有新建,在上面的基础上完成更新
 
 ***
-## 1.1 更新Fiber 
+
+## 1.1 更新Fiber
+
 ```
 export interface IFiber{
   type: any, // 类型
@@ -35,13 +40,16 @@ export function createFiber(vnode:any, returnFiber:IFiber):IFiber {
   return newFiber;
 }
 ```
+
 + 新增`flags` 用户标记组件是需要 **创建(Placement)**，**更新(Update)**，还是**删除(Deletion)**
 + 新增`alternate`,用于指向老节点
 + 新增`memoizedState`,用于储存hook
 + createFiber 将 `flags`初始化为`Placement`
+
 ***
 
-## 1.2 更新 updateNode ，使其具有更新功能，并且能够处理时间
+## 1.2 更新 updateNode ，使其具有更新功能，并且能够处理事件
+
 ```
 // src\react\utils.ts
 
@@ -79,8 +87,11 @@ export function updateNode(node:any, prevVal:any, nextVal:any) {
     });
 }
 ```
+
 ***
+
 ## 1.3 修改**ReactFiberReconciler**
+
 ```
 // src\react\ReactFiberReconciler.ts
 
@@ -134,11 +145,14 @@ function sameNode(a:any, b:any) {
   return !!(a && b && a.type === b.type && a.key === b.key);
 }
 ```
+
 + `updateFunctionComponent` 函数组件调用 `renderHooks`
 + `sameNode` 对比新旧组件，标记组件的`flags`为`Update`
+
 ***
 
 ## 1.4 修改ReactFiberWorkLoop
+
 ```
 // src\react\ReactFiberWorkLoop.ts
 export function scheduleUpdateOnFiber(fiber:any) {
@@ -173,11 +187,14 @@ function commitWorker(wip:any) {
   commitWorker(wip.sibling);
 }
 ```
+
 + `scheduleUpdateOnFiber` 调度前，`alternate`记录自己的当前fiber，调度后,`alternate`就是旧fiber节点了
 + `commitWorker` 提交时，判断flags是新增还是更新，新增还是之前的逻辑，更新回复用之前的Dom,只更新属性
+
 ***
 
 # 2.实现Hook (创建 `src\react\hooks.ts`)
+
 ```
 let workInProgressHook:any = null;
 // 当前工作的fiber
@@ -189,9 +206,11 @@ export function renderHooks(wip:any) {
   workInProgressHook = null;
 }
 ```
-+  **renderHooks** 在 **updateFunctionComponent** 的 `type(props)` 之前调用, **updateFunctionComponent** 会在初次渲染时调用
-+  **currentlyRenderingFiber** 记录当前工作的函数组件 `fiber`
-+  **workInProgressHook** 指向 useFunction闭包的内存地址，从第一个开始，每调用一次useFunction后，workInProgressHook,顺着hook链表向下移动一个
+
++ **renderHooks** 在 **updateFunctionComponent** 的 `type(props)` 之前调用, **updateFunctionComponent** 会在初次渲染时调用
++ **currentlyRenderingFiber** 记录当前工作的函数组件 `fiber`
++ **workInProgressHook** 指向 useFunction闭包的内存地址，从第一个开始，每调用一次useFunction后，workInProgressHook,顺着hook链表向下移动一个
+
 ```
 export function updateWorkInProgressHook():IHook {
   let hook:IHook = {
@@ -232,11 +251,14 @@ export function updateWorkInProgressHook():IHook {
   return hook;
 }
 ```
+
 + **updateWorkInProgressHook** 是在**useFunction**中调用，初次**创建时**，会根据**useFunction** 调用顺序，创建一条 `fiber(memoizedState)->hook0(next)->hook1(next)->hook2(next)->null`
 + 在**更新时** 根据**useFunction**的调用顺序，复用上面的 hook 链表，这样就能完成函数组件的状态保存
+
 ***
 
 ## 2.1 useReducer
+
 ```
 export function useReducer<T>(reducer:Function, initialState:T) {
   // 按照顺序拿到对应的hook值
@@ -255,12 +277,15 @@ export function useReducer<T>(reducer:Function, initialState:T) {
   return [hook.memoizedState, dispatch];
 }
 ```
+
 + 现在看 hook 真简单，神秘的面纱被揭开了，里面做了两件事情
 + 初次创建 根据initialState，初始化 hook值
-+ 调用**dispatch **时，直接运行一下 **reducer**，拿到更新的值，放在 hook上，然后调度一下当前fiber
++ 调用**dispatch**时，直接运行一下 **reducer**，拿到更新的值，放在 hook上，然后调度一下当前fiber
+
 ***
 
 ## 2.1 useState
+
 ```
 export function useState<T>(initialState:T) {
   const hook = updateWorkInProgressHook();
@@ -278,6 +303,7 @@ export function useState<T>(initialState:T) {
   return [hook.memoizedState, dispatch];
 }
 ```
+
 + 原理类似
 
 [源码](https://github.com/shenqil/react-learn/tree/%E6%BA%90%E7%A0%813-hook)

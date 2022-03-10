@@ -1,9 +1,13 @@
 /* eslint-disable react/destructuring-assignment */
-// import React, { Component, useState, useReducer } from 'react';
+// import React, {
+//   Component, useState, useReducer, useEffect, useLayoutEffect,
+// } from 'react';
 // import { render } from 'react-dom';
 import React from 'react';
 import { render } from './react/react-dom';
-import { Component, useReducer, useState } from './react';
+import {
+  Component, useReducer, useState, useEffect, useLayoutEffect,
+} from './react';
 import './index.scss';
 
 interface IProps{
@@ -13,6 +17,12 @@ interface IProps{
 function FuncationComponent(props:IProps) {
   const [count, setCount] = useState(0);
   const [count2, setCount2] = useReducer((x) => x * 2, 1);
+  useEffect(() => {
+    console.log(count2, 'useEffect');
+  }, [count2]);
+  useLayoutEffect(() => {
+    console.log(count2, 'useLayoutEffect');
+  }, [count2]);
   return (
     <div className="border">
       <p>{props.name}</p>

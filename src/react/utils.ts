@@ -6,6 +6,9 @@ export const Placement = /* */ 0b0000000000000000000010; // 2 新增
 export const Update = /* */ 0b0000000000000000000100; // 4 更新
 export const Deletion = /* */ 0b0000000000000000001000; // 8 删除
 
+export const HookLayout = /* */ 0b010;
+export const HookPassive = /* */ 0b100;
+
 export function isString(str:any) {
   return typeof str === 'string';
 }
@@ -50,6 +53,20 @@ export function updateNode(node:any, prevVal:any, nextVal:any) {
         node[k] = nextVal[k];
       }
     });
+}
+
+export function areHookInputsEqual(nextDeps:any, prevDeps:any) {
+  if (prevDeps === null) {
+    return false;
+  }
+  for (let i = 0; i < prevDeps.length && i < nextDeps.length; i++) {
+    if (Object.is(nextDeps[i], prevDeps[i])) {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+    return false;
+  }
+  return true;
 }
 
 export default { isString, isFunction, isStringOrNumber };

@@ -1,6 +1,7 @@
 /* eslint-disable no-multi-assign */
 import { scheduleUpdateOnFiber } from './ReactFiberWorkLoop';
 import { IFiber } from './createFiber';
+import { areHookInputsEqual, HookLayout, HookPassive } from './utils';
 
 let workInProgressHook:any = null;
 // 当前工作的fiber
@@ -9,6 +10,8 @@ let currentlyRenderingFiber:IFiber | null = null;
 export function renderHooks(wip:any) {
   currentlyRenderingFiber = wip as IFiber;
   currentlyRenderingFiber.memoizedState = null;
+  currentlyRenderingFiber.updateQueueOfEffect = [];
+  currentlyRenderingFiber.updateQueueOfLayout = [];
   workInProgressHook = null;
 }
 
@@ -16,6 +19,7 @@ export interface IHook{
   memoizedState:any,
   next:IHook | null
 }
+
 // fiber(memoizedState)->hook0(next)->hook1(next)->hook2(next)->null
 // workInProgressHook=hook2 当前的hook
 export function updateWorkInProgressHook():IHook {
@@ -88,4 +92,32 @@ export function useState<T>(initialState:T) {
   };
 
   return [hook.memoizedState, dispatch];
+}
+
+export function useEffect(create:Function, deps:Array<any> | null) {
+  updateEffectIml(HookPassive, create, deps);
+}
+
+export function useLayoutEffect(create:Function, deps:Array<any> | null) {
+  updateEffectIml(HookLayout, create, deps);
+}
+
+function updateEffectIml(hookFlags:number, create:Function, deps:Array<any> | null) {
+  const hook = updateWorkInProgressHook();
+
+  if (!hook.memoizedState) {
+    // 第一次渲染
+    hook.memoizedState = { create, deps, HookLayout };
+  } else {
+    if (areHookInputsEqual(hook.memoizedState.deps, deps)) {
+      return;
+    }
+    hook.memoizedState = { create, deps, HookLayout };
+  }
+
+  if (hookFlags & HookLayout) {
+    currentlyRenderingFiber?.updateQueueOfLayout.push(hook.memoizedState);
+  } else if (hookFlags & HookPassive) {
+    currentlyRenderingFiber?.updateQueueOfEffect.push(hook.memoizedState);
+  }
 }

@@ -43,7 +43,7 @@ function reconcileChildren(returnFiber:any, children:any) {
   let previousNewFiber:any | null = null;
 
   let oldFiber = returnFiber.alternate && returnFiber.alternate.child;
-  // eslint-disable-next-line no-plusplus
+
   for (let i = 0; i < newChildren.length; i++) {
     const child = newChildren[i];
     const newFiber = createFiber(child, returnFiber);

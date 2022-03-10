@@ -1,4 +1,3 @@
-/* eslint-disable no-bitwise */
 import {
   updataHostComponent,
   updateClassComponent,
@@ -12,9 +11,8 @@ import {
 
 let wipRoot:any = null;
 let nextUnitOfwork:any = null;
-// eslint-disable-next-line import/prefer-default-export
+
 export function scheduleUpdateOnFiber(fiber:any) {
-  // eslint-disable-next-line no-param-reassign
   fiber.alternate = { ...fiber };
   wipRoot = fiber;
   wipRoot.sibling = null;
@@ -88,8 +86,7 @@ function performUnitOfWork(wip:any):any {
 }
 
 function commitRoot() {
-  commitWorker(wipRoot?.child);
-  // wipRoot = null;
+  isFunction(wipRoot.type) ? commitWorker(wipRoot) : commitWorker(wipRoot?.child);
 }
 
 function commitWorker(wip:any) {
@@ -97,8 +94,13 @@ function commitWorker(wip:any) {
     return;
   }
 
+  const { stateNode, flags, type } = wip;
+
+  if (isFunction(type)) {
+    invokesHooks(wip);
+  }
+
   // 将子节点挂载在父节点上
-  const { stateNode, flags } = wip;
   const parentNode = getParentNode(wip);
 
   // 新增
@@ -127,4 +129,19 @@ function getParentNode(fiber:any):HTMLElement {
     nuxt = nuxt.return;
   }
   throw new Error('getParentNode is null');
+}
+
+function invokesHooks(wip:any) {
+  const { updateQueueOfEffect, updateQueueOfLayout } = wip;
+
+  if (updateQueueOfEffect && updateQueueOfEffect.length) {
+    updateQueueOfEffect.forEach(({ create }:any) => schedulerCallback(() => {
+      create();
+      return true;
+    }));
+  }
+
+  if (updateQueueOfLayout && updateQueueOfLayout.length) {
+    updateQueueOfLayout.forEach(({ create }:any) => create());
+  }
 }

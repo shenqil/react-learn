@@ -105,7 +105,12 @@ function commitWorker(wip:any) {
 
   // 新增
   if (stateNode && flags & Placement) {
-    parentNode.appendChild(stateNode);
+    const hasSiblingNode = foundSiblingNode(wip, parentNode);
+    if (hasSiblingNode) {
+      parentNode.insertBefore(stateNode, hasSiblingNode);
+    } else {
+      parentNode.appendChild(wip.stateNode);
+    }
   }
 
   // 更新
@@ -113,9 +118,32 @@ function commitWorker(wip:any) {
     updateNode(stateNode, wip.alternate.props, wip.props);
   }
 
+  // 删除
+  if (wip.deletoins) {
+    commitDeletions(wip.deletoins, stateNode || parentNode);
+    wip.deletoins = null;
+  }
+
   // 递归
   commitWorker(wip.child);
   commitWorker(wip.sibling);
+}
+
+function foundSiblingNode(fiber:any, parentNode:HTMLElement) {
+  let siblingHasNode = fiber.sibling;
+  let node = null;
+  while (siblingHasNode) {
+    node = siblingHasNode.stateNode;
+    if (node && parentNode.contains(node)) {
+      return node;
+    }
+    siblingHasNode = siblingHasNode.sibling;
+  }
+  return null;
+}
+
+function commitDeletions(deletoins:Array<any>, parentNode:HTMLElement) {
+  deletoins.forEach((element:any) => parentNode.removeChild(getStateNode(element)));
 }
 
 function getParentNode(fiber:any):HTMLElement {
@@ -129,6 +157,14 @@ function getParentNode(fiber:any):HTMLElement {
     nuxt = nuxt.return;
   }
   throw new Error('getParentNode is null');
+}
+
+function getStateNode(fiber:any) {
+  let tem = fiber;
+  while (!tem.stateNode) {
+    tem = tem.child;
+  }
+  return tem.stateNode as HTMLElement;
 }
 
 function invokesHooks(wip:any) {

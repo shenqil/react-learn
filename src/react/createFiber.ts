@@ -10,10 +10,11 @@ export interface IFiber{
   return?: IFiber, // 父节点
   stateNode: HTMLElement | null, // 真实Dom
   flags?:Number, // 标记当前节点类型(插入，更新，删除)
-  alternate?:IFiber, // 老节点
+  alternate?:IFiber, // 老Fiber节点
   memoizedState?:any,
-  updateQueueOfEffect?:any, // 挂载需要更新的effect
-  updateQueueOfLayout?:any // 挂载需要更新的LayoutEffect
+  updateQueueOfEffect?:Array<any>, // 挂载需要更新的effect
+  updateQueueOfLayout?:Array<any>, // 挂载需要更新的LayoutEffect
+  deletoins?:Array<any> // 挂载需要删除的子节点
 }
 
 export function createFiber(vnode:any, returnFiber:IFiber):IFiber {

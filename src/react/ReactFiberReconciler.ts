@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable no-param-reassign */
-import { createFiber } from './createFiber';
 import { renderHooks } from './hooks';
-import { updateNode, isStringOrNumber, Update } from './utils';
+import { reconcileChildren } from './ReactChildFiber';
+import { updateNode } from './utils';
 
 export function updataHostComponent(wip:any) {
   if (!wip.stateNode) {
@@ -32,48 +30,6 @@ export function updateFunctionComponent(wip:any) {
 
 export function updateFragementComponent(wip:any) {
   reconcileChildren(wip, wip.props.children);
-}
-
-function reconcileChildren(returnFiber:any, children:any) {
-  if (isStringOrNumber(children)) {
-    return;
-  }
-
-  const newChildren = Array.isArray(children) ? children : [children];
-  let previousNewFiber:any | null = null;
-
-  let oldFiber = returnFiber.alternate && returnFiber.alternate.child;
-
-  for (let i = 0; i < newChildren.length; i++) {
-    const child = newChildren[i];
-    const newFiber = createFiber(child, returnFiber);
-
-    if (sameNode(newFiber, oldFiber)) {
-      // 更新
-      Object.assign(newFiber, {
-        alternate: oldFiber,
-        stateNode: oldFiber.stateNode,
-        flags: Update,
-      });
-    }
-
-    if (oldFiber) {
-      oldFiber = oldFiber.sibling;
-    }
-
-    if (previousNewFiber === null) {
-      // parentFiber的child指向第一个fiber
-      returnFiber.child = newFiber;
-    } else {
-      // 否则将上一个fiber,指向当前fiber
-      previousNewFiber.sibling = newFiber;
-    }
-    previousNewFiber = newFiber;
-  }
-}
-
-function sameNode(a:any, b:any) {
-  return !!(a && b && a.type === b.type && a.key === b.key);
 }
 
 export default {
